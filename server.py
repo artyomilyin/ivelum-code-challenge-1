@@ -22,15 +22,14 @@ class IvelumRequestHandler(SimpleHTTPRequestHandler):
                 link_href = link.get('href')
                 parsed_link = urlparse(link_href)
                 if 'habr' in parsed_link.netloc:
-                    # have to use protected method as
                     parsed_link = parsed_link._replace(netloc=f'127.0.0.1:{PORT}', scheme='http')
                     link['href'] = parsed_link.geturl()
 
             re_pattern = r'\b([^\W\d_]{6})\b'  # returns only 6-letter words, without digits and underscores
 
-            # find every element which 'text' parameter matching the re_pattern
+            # find every element which 'text' parameter matching the re_pattern and not being a script
             # then add ™ char to every 6-letter word
-            found_lines = soup.find_all(text=re.compile(re_pattern))
+            found_lines = [line for line in soup.find_all(text=re.compile(re_pattern)) if line.parent.name != 'script']
             for line in found_lines:
                 new_line = re.sub(re_pattern, r'\1™', line)
                 line.replaceWith(new_line)
