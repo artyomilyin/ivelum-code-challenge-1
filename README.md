@@ -8,7 +8,7 @@ is also modified to point to this proxy-server's address.
 
 The server uses `requests` and `beautifulsoup4` packages.
 
-###Usage:
+### Usage:
 `python3 ./server.py` to run it on default `8080` port
-####or
+#### or
 `python3 ./server.py 12345` to run it on port `12345` or any other available port.
