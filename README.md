@@ -12,3 +12,9 @@ The server uses `requests` and `beautifulsoup4` packages.
 `python3 ./server.py` to run it on default `8080` port
 #### or
 `python3 ./server.py 12345` to run it on port `12345` or any other available port.
+
+
+### Tests:
+`python3 ./tests.py` if the server runs on default `8080` port
+#### or
+`python3 ./tests.py 12345` if the server runs on port `12345` or any other port.
