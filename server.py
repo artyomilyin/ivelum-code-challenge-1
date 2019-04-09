@@ -40,7 +40,7 @@ class IvelumRequestHandler(SimpleHTTPRequestHandler):
 
         # add 'Content-Type' header with ResponseCode and return it
         self.send_response(200)
-        self.send_header('Content-type', 'text/html')
+        self.send_header('Content-type', habr_response.headers.get('Content-Type'))
         self.end_headers()
         self.wfile.write(habr_response.content)
 
