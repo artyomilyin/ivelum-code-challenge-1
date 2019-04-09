@@ -15,7 +15,7 @@ class IvelumRequestHandler(SimpleHTTPRequestHandler):
 
         # precessing only text/html responses
         if 'text/html' in habr_response.headers['Content-Type']:
-            soup = BeautifulSoup(habr_response.text, 'html.parser')
+            soup = BeautifulSoup(habr_response.content.decode('utf-8'), 'html.parser')
 
             # replace hostname and port for every link containing 'habr'
             for link in soup.find_all('a', href=True):
@@ -35,7 +35,7 @@ class IvelumRequestHandler(SimpleHTTPRequestHandler):
                 line.replaceWith(new_line)
 
             # replace response's content with modified one
-            habr_response._content = bytes(str(soup), 'utf-8')
+            habr_response._content = soup.encode('utf-8')
 
         # add 'Content-Type' header with ResponseCode and return it
         self.send_response(200)
