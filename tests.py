@@ -47,7 +47,8 @@ class IvelumHttpProxyServerTests(unittest.TestCase):
         initial_request = requests.get(f"http://127.0.0.1:{PORT}")
         soup = BeautifulSoup(html.unescape(initial_request.content.decode('utf-8')), 'html.parser')
         link_hrefs = [link.get('href') for link in soup.find_all('a', href=True)]
-        self.no_habr_links(link_hrefs)
+        xlink_hrefs = [xlink.get('xlink:href') for xlink in soup.find_all('use')]
+        self.no_habr_links(link_hrefs + xlink_hrefs)
         self.no_six_letter_words(soup)
 
         for i in range(5):
@@ -57,7 +58,8 @@ class IvelumHttpProxyServerTests(unittest.TestCase):
             test_request = requests.get(random_link)
             test_soup = BeautifulSoup(html.unescape(test_request.content.decode('utf-8')), 'html.parser')
             test_links = [link.get('href') for link in test_soup.find_all('a', href=True)]
-            self.no_habr_links(test_links)
+            test_xlinks = [xlink.get('xlink:href') for xlink in test_soup.find_all('use')]
+            self.no_habr_links(test_links + test_xlinks)
             self.no_six_letter_words(test_soup)
 
 
