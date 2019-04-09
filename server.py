@@ -25,6 +25,13 @@ class IvelumRequestHandler(SimpleHTTPRequestHandler):
                 if 'habr' in parsed_link.netloc:
                     parsed_link = parsed_link._replace(netloc=f'127.0.0.1:{PORT}', scheme='http')
                     link['href'] = parsed_link.geturl()
+            # repeat the same for <use xlink:href="..."> links (svg)
+            for xlink in soup.find_all('use'):
+                xlink_href = xlink.get('xlink:href')
+                parsed_link = urlparse(xlink_href)
+                if 'habr' in parsed_link.netloc:
+                    parsed_link = parsed_link._replace(netloc=f'127.0.0.1:{PORT}', scheme='http')
+                    xlink['xlink:href'] = parsed_link.geturl()
 
             re_pattern = r'\b([^\W\d_]{6})\b'  # returns only 6-letter words, without digits and underscores
 
