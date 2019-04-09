@@ -1,3 +1,4 @@
+import html
 import re
 import unittest
 from urllib.parse import urlparse
@@ -44,7 +45,7 @@ class IvelumHttpProxyServerTests(unittest.TestCase):
         """
 
         initial_request = requests.get(f"http://127.0.0.1:{PORT}")
-        soup = BeautifulSoup(initial_request.content, 'html.parser')
+        soup = BeautifulSoup(html.unescape(initial_request.content.decode('utf-8')), 'html.parser')
         link_hrefs = [link.get('href') for link in soup.find_all('a', href=True)]
         self.no_habr_links(link_hrefs)
         self.no_six_letter_words(soup)
@@ -54,7 +55,7 @@ class IvelumHttpProxyServerTests(unittest.TestCase):
             random_link = random.choice(localhost_links)
             print(f"random_link is {random_link}")
             test_request = requests.get(random_link)
-            test_soup = BeautifulSoup(test_request.content, 'html.parser')
+            test_soup = BeautifulSoup(html.unescape(test_request.content.decode('utf-8')), 'html.parser')
             test_links = [link.get('href') for link in test_soup.find_all('a', href=True)]
             self.no_habr_links(test_links)
             self.no_six_letter_words(test_soup)
