@@ -3,7 +3,7 @@ import re
 from urllib.parse import urlparse, urlunparse
 
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Comment
 
 
 EXCLUDE_TAGS = ['script', 'code', 'style']
@@ -50,9 +50,8 @@ class IvelumRequestHandler(SimpleHTTPRequestHandler):
 
             # find every element which 'text' parameter matching the re_pattern and not being a script
             # then add ™ char to every 6-letter word
-            exclude_tags = ['script', 'code', 'style']
             found_lines = [line for line in soup.find_all(text=re.compile(re_pattern))
-                           if line.parent.name not in EXCLUDE_TAGS]
+                           if line.parent.name not in EXCLUDE_TAGS and isinstance(line, Comment)]
             for line in found_lines:
                 new_line = re.sub(re_pattern, r'\1™', line)
                 line.replaceWith(new_line)
