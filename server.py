@@ -31,6 +31,13 @@ class IvelumRequestHandler(SimpleHTTPRequestHandler):
                 if 'habr' in parsed_link.netloc:
                     parsed_link = parsed_link._replace(netloc=f'127.0.0.1:{PORT}', scheme='http')
                     xlink['xlink:href'] = parsed_link.geturl()
+            # the search form should point to localhost as well
+            for form in soup.find_all('form', action=True):
+                form_action = form.get('action')
+                parsed_link = urlparse(form_action)
+                if 'habr' in parsed_link.netloc:
+                    parsed_link = parsed_link._replace(netloc=f'127.0.0.1:{PORT}', scheme='http')
+                    form['action'] = parsed_link.geturl()
 
             re_pattern = r'\b([^\W\d_]{6})\b'  # returns only 6-letter words, without digits and underscores
 
