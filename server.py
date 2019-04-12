@@ -1,4 +1,3 @@
-import html
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 import re
 from urllib.parse import urlparse
@@ -16,7 +15,7 @@ class IvelumRequestHandler(SimpleHTTPRequestHandler):
 
         # precessing only text/html responses
         if 'text/html' in habr_response.headers['Content-Type']:
-            soup = BeautifulSoup(html.unescape(habr_response.content.decode('utf-8')), 'html.parser')
+            soup = BeautifulSoup(habr_response.content, 'html5lib')
 
             # replace hostname and port for every link containing 'habr'
             for link in soup.find_all('a', href=True):
