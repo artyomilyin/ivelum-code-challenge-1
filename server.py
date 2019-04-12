@@ -6,6 +6,9 @@ import requests
 from bs4 import BeautifulSoup
 
 
+EXCLUDE_TAGS = ['script', 'code', 'style']
+
+
 class IvelumRequestHandler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
@@ -49,7 +52,7 @@ class IvelumRequestHandler(SimpleHTTPRequestHandler):
             # then add ™ char to every 6-letter word
             exclude_tags = ['script', 'code', 'style']
             found_lines = [line for line in soup.find_all(text=re.compile(re_pattern))
-                           if line.parent.name not in exclude_tags]
+                           if line.parent.name not in EXCLUDE_TAGS]
             for line in found_lines:
                 new_line = re.sub(re_pattern, r'\1™', line)
                 line.replaceWith(new_line)

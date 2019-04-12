@@ -7,6 +7,8 @@ import random
 import requests
 from bs4 import BeautifulSoup
 
+from server import EXCLUDE_TAGS
+
 
 PORT = 8080
 
@@ -22,8 +24,12 @@ class IvelumHttpProxyServerTests(unittest.TestCase):
 
         re_pattern = r'\b([^\W\d_]{6})\b[^™]'  # for some reason you need to put '™' sign after \b char
         regex_matching_lines = soup_obj.find_all(text=re.compile(re_pattern))
-        found_lines = [line for line in regex_matching_lines if line.parent.name != 'script']
-        assert not found_lines
+        found_lines = [line for line in regex_matching_lines
+                       if line.parent.name not in EXCLUDE_TAGS]
+        try:
+            assert not found_lines
+        except AssertionError:
+            print(f"Assertion ERROR! found_lines: {found_lines}")
 
     @staticmethod
     def no_habr_links(href_list):
