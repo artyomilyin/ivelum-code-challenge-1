@@ -1,6 +1,6 @@
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 import re
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -9,6 +9,13 @@ from bs4 import BeautifulSoup
 class IvelumRequestHandler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
+
+        def replace_habr_link(parsed_link):
+            url_list = list(parsed_link)
+            url_list[0] = 'http'
+            url_list[1] = f'127.0.0.1:{PORT}'
+            return urlunparse(url_list)
+
         base_url = "https://habrahabr.ru/"
         url_to_open = f"{base_url}{self.path}"
         habr_response = requests.get(url_to_open)
@@ -22,22 +29,19 @@ class IvelumRequestHandler(SimpleHTTPRequestHandler):
                 link_href = link.get('href')
                 parsed_link = urlparse(link_href)
                 if 'habr' in parsed_link.netloc:
-                    parsed_link = parsed_link._replace(netloc=f'127.0.0.1:{PORT}', scheme='http')
-                    link['href'] = parsed_link.geturl()
+                    link['href'] = replace_habr_link(parsed_link)
             # repeat the same for <use xlink:href="..."> links (svg)
             for xlink in soup.find_all('use'):
                 xlink_href = xlink.get('xlink:href')
                 parsed_link = urlparse(xlink_href)
                 if 'habr' in parsed_link.netloc:
-                    parsed_link = parsed_link._replace(netloc=f'127.0.0.1:{PORT}', scheme='http')
-                    xlink['xlink:href'] = parsed_link.geturl()
+                    xlink['xlink:href'] = replace_habr_link(parsed_link)
             # the search form should point to localhost as well
             for form in soup.find_all('form', action=True):
                 form_action = form.get('action')
                 parsed_link = urlparse(form_action)
                 if 'habr' in parsed_link.netloc:
-                    parsed_link = parsed_link._replace(netloc=f'127.0.0.1:{PORT}', scheme='http')
-                    form['action'] = parsed_link.geturl()
+                    form['action'] = replace_habr_link(parsed_link)
 
             re_pattern = r'\b([^\W\d_]{6})\b'  # returns only 6-letter words, without digits and underscores
 
